@@ -7,6 +7,7 @@ import ContactForm from './ContactForm'
 function App() {
   const [contacts,setcontacts]=useState([])
   const [isModelOpen,setisModelOpen]=useState(false)
+  const [currentContact,setcurrentContact ]=useState({})
   useEffect(()=>{
     fetchcontacts()
   },[])
@@ -20,20 +21,30 @@ function App() {
    };
    const closeModel=()=>{
       setisModelOpen(false)
+      setcurrentContact({})
    }
    const opencreatemodel=()=>{
     if(!isModelOpen) setisModelOpen(true)
    }
-   openEditModel=(contact)
+   const openEditModel=(contact)=>{
+    if (isModelOpen) return
+    setcurrentContact(contact)
+    setisModelOpen(true)
+   }
+
+   const onUpdate=()=>{
+    closeModel()
+    fetchcontacts()
+   }
 
   return (
     <>
-      <ContactList contacts={contacts}/>
+      <ContactList contacts={contacts} updateContact={openEditModel} updateCallback={onUpdate}/>
       <button onClick={opencreatemodel}>Create new contact</button>
       {isModelOpen &&  <div className='modal'>
         <div className='modal-content'>
           <span className='close' onClick={closeModel}>&times;</span>
-        <ContactForm />
+        <ContactForm existingContact={currentContact} updateCallback={onUpdate}/>
         </div>
       </div>   }
       
